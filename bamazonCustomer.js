@@ -1,28 +1,13 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
+const serverParams = require("./config.js");
 
-function createSqlParams() {
-  inquirer.prompt([
-    {
-      name: 'user',
-      type: 'input',
-      message: 'Server Username:'
-    },
-    {
-      name: 'password',
-      type: 'password',
-      message: 'Server Password:'
-    }
-  ]).then(function (answers) {
-    let obj = {
-      host: "localhost",
-      port: 3306,
-      user: answers.user,
-      password: answers.password,
-      database: "bamazon_db"
-    };
-    return obj;
-  });
-}
+let connection = mysql.createConnection(serverParams);
 
-const params = createSqlParams();
+connection.connect(function (err) {
+  if (err) {
+    throw err;
+  } else {
+    console.log("Successfully Connected!");
+  }
+});
