@@ -1,0 +1,26 @@
+{
+  "name": "bamazon",
+  "version": "1.0.0",
+  "description": "An amazon-esk app built using node / mySql",
+  "main": "bamazonCustomer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhdavis/bamazon.git"
+  },
+  "keywords": [
+    "bamazon"
+  ],
+  "author": "Michael Davis",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mhdavis/bamazon/issues"
+  },
+  "homepage": "https://github.com/mhdavis/bamazon#readme",
+  "dependencies": {
+    "inquirer": "^3.2.1",
+    "mysql": "^2.14.0"
+  }
+}
