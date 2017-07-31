@@ -22,12 +22,12 @@ connection.connect(function (err) {
           "--------------------------------"
         );
       }
-      customerProcess();
+      processOrder();
     });
   }
 });
 
-function customerProcess() {
+function processOrder() {
   console.log("\n");
   inquirer.prompt([
     {
@@ -42,14 +42,22 @@ function customerProcess() {
     }
   ]).then(function (answer) {
     connection.query("SELECT * FROM products", function (err, res) {
-      let parsedId = parseInt(answer.idSelected) - 1;
-      let storeStock = res[parsedId].stock_quantity;
-      let desiredAmount = answer.quantitySelected;
       console.log("");
-      if (storeStock >= desiredAmount) {
-        console.log("There is enough!");
+      let parsedId = parseInt(answer.idSelected);
+      let idIndex = parsedId - 1;
+
+      if (!res[idIndex] === undefined) {
+        let storeStock = res[idIndex].stock_quantity;
+        let desiredAmount = answer.quantitySelected;
+
+        if (storeStock >= desiredAmount) {
+          console.log("There is enough!");
+        } else {
+          console.log("Insufficient Quantity!");
+        }
       } else {
-        console.log("Insufficient Quantity!");
+        console.log(`\nSorry! No Product with ID: [ ${answer.idSelected} ] Found!`);
+        processOrder();
       }
     });
   });
