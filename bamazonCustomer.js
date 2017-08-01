@@ -75,8 +75,8 @@ function processOrder() {
 }
 
 function removeFromStock(ans) {
-  let rfsQuery = `UPDATE products SET stock_quantity=stock_quantity-${parseInt(ans.quantitySelected)} WHERE item_id=${parseInt(ans.idSelected)}`;
-  connection.query(rfsQuery, function(err) {
+  let query = `UPDATE products SET stock_quantity=stock_quantity-${parseInt(ans.quantitySelected)} WHERE item_id=${parseInt(ans.idSelected)}`;
+  connection.query(query, function(err) {
     if (err) throw err;
   });
 }
