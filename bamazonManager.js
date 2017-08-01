@@ -115,27 +115,33 @@ function addInventory() {
       }
     ]).then(function(answer) {
       let query = `UPDATE products SET stock_quantity=stock_quantity+${parseInt(answer.quantity)} WHERE item_id=${parseInt(answer.id)}`;
-      connection.query(query, function(error) {
+      connection.query(query, function(error, res) {
         if (error) throw error;
-        // console.log(`\nSuccessfully increased Item ${answer.id} by ${answer.quantity} units!`);
-      });
-
-      inquirer.prompt([{
-        name: "continueAdding",
-        type: "confirm",
-        message: "Would you like to continue adding to inventory?",
-        default: true
-      }]).then(function(answer) {
-        if (answer.continueAdding) {
-          addInventory();
+        if (res.changedRows > 0) {
+          console.log(`\nSuccessfully increased Item ${answer.id} by ${answer.quantity} units!`);
         } else {
-          managerContinue();
+          console.log(`\n Error: Item ${answer.id} does NOT exist`);
         }
+        continueAddingInventory();
       });
+
     });
-
   });
+}
 
+function continueAddingInventory() {
+  inquirer.prompt([{
+    name: "continueAdding",
+    type: "confirm",
+    message: "Would you like to continue adding to inventory?",
+    default: true
+  }]).then(function(answer) {
+    if (answer.continueAdding) {
+      addInventory();
+    } else {
+      managerContinue();
+    }
+  });
 }
 
 function addNewProduct() {
