@@ -66,7 +66,27 @@ function viewProducts() {
   }
 
   function viewLowInventory() {
-    console.log("option 2");
+    connection.query("SELECT * FROM products WHERE stock_quantity < 5", function(err, res) {
+        if (err) throw err;
+        console.log(
+          "\n" +
+          "+-------------------------+\n" +
+          "|    VIEW LOW INVENTORY   |\n" +
+          "+-------------------------+"
+        );
+        for (let i = 0; i < res.length; i++) {
+          console.log(
+            "\n" +
+            `-------------------------------- ITEM ${res[i].item_id}\n` +
+            '|| Product: ' + res[i].product_name + "\n" +
+            '|| Depart.: ' + res[i].department_name + "\n" +
+            '|| Price: $' + res[i].price.toFixed(2) + "\n" +
+            '|| Stock: ' + res[i].stock_quantity + "\n" +
+            "--------------------------------"
+          );
+        }
+        managerContinue();
+      });
   }
 
   function addInventory() {
