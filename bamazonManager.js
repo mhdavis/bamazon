@@ -61,6 +61,7 @@ function viewProducts() {
           "--------------------------------"
         );
       }
+      managerContinue();
     });
   }
 
@@ -75,3 +76,18 @@ function viewProducts() {
   function addNewProduct() {
     console.log("option 4");
   }
+
+function managerContinue() {
+  inquirer.prompt([{
+    type: "confirm",
+    name: "continue",
+    message: "Return to Manager Options?",
+    default: true
+  }]).then(function(answer) {
+    if (answer.continue) {
+      displayManagerOptions();
+    } else {
+      console.log("\nTHANK YOU, GOODBYE!")
+    }
+  });
+}
