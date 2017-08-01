@@ -21,11 +21,40 @@ function displayManagerOptions() {
         "View Products for Sale",
         "View Low Inventory",
         "Add to Inventory",
-        "Add to Product"
+        "Add New Product"
       ],
       message: "Select a manager option:"
     }
   ]).then(function (answers) {
-    console.log(answers.choice);
+    switch (answer.choices) {
+      case "View Products for Sale":
+        viewProducts();
+        break;
+      case "View Low Inventory":
+        viewLowInventory();
+        break;
+      case "Add to Inventory":
+        addInventory();
+        break;
+      case "Add New Product":
+        addNewProduct();
+        break;
+    }
   });
+}
+
+function viewProducts() {
+
+}
+
+function viewLowInventory() {
+
+}
+
+function addInventory() {
+
+}
+
+function addNewProduct() {
+  
 }
