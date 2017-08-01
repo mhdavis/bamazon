@@ -139,11 +139,72 @@ function addInventory() {
 }
 
 function addNewProduct() {
-  console.log("option 4");
+  console.log(
+    "\n" +
+    "+------------------------+\n" +
+    "|     ADD NEW PRODUCT    |\n" +
+    "+------------------------+\n"
+  );
+
+  inquirer.prompt([
+    {
+      name: "product",
+      type: "input",
+      message: "NAME:"
+    },
+    {
+      name: "department",
+      type: "input",
+      message: "DEPART.:"
+    },
+    {
+      name: "price",
+      type: "input",
+      message: "PRICE ($):",
+      validate: function (value) {
+        let flt = parseFloat(value);
+        if (typeof flt === 'number') {
+          return true;
+        }
+        return false;
+      }
+    },
+    {
+      name: "stock",
+      type: "input",
+      message: "STOCK:",
+      validate: function (value) {
+        let flt = parseFloat(value);
+        if (typeof flt === 'number') {
+          return true;
+        }
+        return false;
+      }
+    }
+  ]).then(function (answers) {
+    let query = 'INSERT INTO products (product_name, department_name, price, stock_quantity) ';
+    let values = `VALUES ("${answers.product}", "${answers.department}", ${parseFloat(answers.price).toFixed(2)}, ${parseInt(answers.stock)})`;
+    let totalQuery = query + values;
+    connection.query(totalQuery, function (err) {
+      if (err) throw err;
+
+      inquirer.prompt([{
+        name: "continueAddingProducts",
+        type: "confirm",
+        message: "Would you like to continue adding new products?",
+      }]).then(function(answer) {
+        if (answer.continueAddingProducts) {
+          addNewProduct();
+        } else {
+          managerContinue();
+        }
+      });
+    });
+
+  });
 }
 
 // helper functions
-
 
 function managerContinue() {
   inquirer.prompt([{
