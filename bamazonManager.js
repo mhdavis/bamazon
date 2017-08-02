@@ -1,6 +1,8 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
+const Table = require("cli-table");
 const serverParams = require("./config.js");
+const tableChars = require("./tableChars.js");
 
 let connection = mysql.createConnection(serverParams);
 
@@ -44,23 +46,31 @@ function displayManagerOptions() {
 function viewProducts() {
   connection.query("SELECT * FROM products", function(err, res) {
     if (err) throw err;
+
     console.log(
       "\n" +
       "+--------------------------+\n" +
       "|   MANAGER PRODUCT VIEW   |\n" +
-      "+--------------------------+"
+      "+--------------------------+\n"
     );
-    for (let i = 0; i < res.length; i++) {
-      console.log(
-        "\n" +
-        `-------------------------------- ITEM ${res[i].item_id}\n` +
-        '|| Product: ' + res[i].product_name + "\n" +
-        '|| Depart.: ' + res[i].department_name + "\n" +
-        '|| Price: $' + res[i].price.toFixed(2) + "\n" +
-        '|| Stock: ' + res[i].stock_quantity + "\n" +
-        "--------------------------------"
-      );
+
+    let table = new Table({
+      chars: tableChars,
+      head: ["ID", "Product", "Department", "Price", "Stock"],
+      colWidths: [5, 20, 20, 15 ,10]
+    });
+
+    for (let i=0; i < res.length; i++) {
+      table.push([
+        res[i].item_id,
+        res[i].product_name,
+        res[i].department_name,
+        "$" + res[i].price.toFixed(2),
+        res[i].stock_quantity
+       ]);
     }
+    console.log(table.toString());
+
     managerContinue();
   });
 }
@@ -72,19 +82,26 @@ function viewLowInventory() {
       "\n" +
       "+-------------------------+\n" +
       "|    VIEW LOW INVENTORY   |\n" +
-      "+-------------------------+"
+      "+-------------------------+\n"
     );
-    for (let i = 0; i < res.length; i++) {
-      console.log(
-        "\n" +
-        `-------------------------------- ITEM ${res[i].item_id}\n` +
-        '|| Product: ' + res[i].product_name + "\n" +
-        '|| Depart.: ' + res[i].department_name + "\n" +
-        '|| Price: $' + res[i].price.toFixed(2) + "\n" +
-        '|| Stock: ' + res[i].stock_quantity + "\n" +
-        "--------------------------------"
-      );
+
+    let table = new Table({
+      chars: tableChars,
+      head: ["ID", "Product", "Department", "Price", "Stock"],
+      colWidths: [5, 20, 20, 15 ,10]
+    });
+
+    for (let i=0; i < res.length; i++) {
+      table.push([
+        res[i].item_id,
+        res[i].product_name,
+        res[i].department_name,
+        "$" + res[i].price.toFixed(2),
+        res[i].stock_quantity
+       ]);
     }
+    console.log(table.toString());
+
     managerContinue();
   });
 }
@@ -98,10 +115,25 @@ function addInventory() {
       "|     ADD TO INVENTORY    |\n" +
       "+-------------------------+\n"
     );
-    for (let i = 0; i < res.length; i++) {
-      console.log(`ID: ${res[i].item_id} || PRODUCT: ${res[i].product_name} || STOCK: ${res[i].stock_quantity}`);
+
+    let table = new Table({
+      chars: tableChars,
+      head: ["ID", "Product", "Stock"],
+      colWidths: [5, 20, 10]
+    });
+
+    for (let i=0; i < res.length; i++) {
+      table.push([
+        res[i].item_id,
+        res[i].product_name,
+        res[i].department_name,
+        "$" + res[i].price.toFixed(2),
+        res[i].stock_quantity
+       ]);
     }
+    console.log(table.toString());
     console.log("");
+
 
     inquirer.prompt([{
         name: "id",
