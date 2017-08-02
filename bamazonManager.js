@@ -118,29 +118,14 @@ function addInventory() {
       connection.query(query, function(error, res) {
         if (error) throw error;
         if (res.changedRows > 0) {
-          console.log(`\nSuccessfully increased Item ${answer.id} by ${answer.quantity} units!`);
+          console.log(`\nSuccessfully increased Item ${answer.id} by ${answer.quantity} units!\n`);
         } else {
-          console.log(`\n Error: Item ${answer.id} does NOT exist`);
+          console.log(`\nError: Item ${answer.id} does NOT exist\n`);
         }
         continueAddingInventory();
       });
 
     });
-  });
-}
-
-function continueAddingInventory() {
-  inquirer.prompt([{
-    name: "continueAdding",
-    type: "confirm",
-    message: "Would you like to continue adding to inventory?",
-    default: true
-  }]).then(function(answer) {
-    if (answer.continueAdding) {
-      addInventory();
-    } else {
-      managerContinue();
-    }
   });
 }
 
@@ -223,6 +208,21 @@ function managerContinue() {
       displayManagerOptions();
     } else {
       console.log("\nTHANK YOU, GOODBYE!")
+    }
+  });
+}
+
+function continueAddingInventory() {
+  inquirer.prompt([{
+    name: "continueAdding",
+    type: "confirm",
+    message: "Would you like to continue adding to inventory?",
+    default: true
+  }]).then(function(answer) {
+    if (answer.continueAdding) {
+      addInventory();
+    } else {
+      managerContinue();
     }
   });
 }
