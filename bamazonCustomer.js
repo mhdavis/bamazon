@@ -1,6 +1,8 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 const serverParams = require("./config.js");
+const Table = require("cli-table");
+const tableChars = require("./tablechars.js");
 
 let connection = mysql.createConnection(serverParams);
 let customerTotal = 0;
@@ -16,17 +18,30 @@ connection.connect(function(err) {
 function commenceShop() {
   connection.query("SELECT * FROM products", function(err, res) {
     if (err) throw err;
-    for (let i = 0; i < res.length; i++) {
-      console.log(
-        "\n" +
-        `-------------------------------- ITEM ${res[i].item_id}\n` +
-        '|| Product: ' + res[i].product_name + "\n" +
-        '|| Depart.: ' + res[i].department_name + "\n" +
-        '|| Price: $' + res[i].price.toFixed(2) + "\n" +
-        '|| Stock: ' + res[i].stock_quantity + "\n" +
-        "--------------------------------"
-      );
+
+    console.log(
+      "\n" +
+      "+-------------------------+\n" +
+      "|     STORE INVENTORY     |\n" +
+      "+-------------------------+\n"
+    );
+
+    let table = new Table({
+      chars: tableChars,
+      head: ["ID", "Product", "Department", "Price", "Stock"],
+      colWidths: [5, 20, 20, 15 ,10]
+    });
+
+    for (let i=0; i < res.length; i++) {
+      table.push([
+        res[i].item_id,
+        res[i].product_name,
+        res[i].department_name,
+        "$" + res[i].price.toFixed(2),
+        res[i].stock_quantity
+       ]);
     }
+    console.log(table.toString());
     processOrder();
   });
 }

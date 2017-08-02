@@ -126,8 +126,6 @@ function addInventory() {
       table.push([
         res[i].item_id,
         res[i].product_name,
-        res[i].department_name,
-        "$" + res[i].price.toFixed(2),
         res[i].stock_quantity
        ]);
     }
@@ -239,7 +237,7 @@ function managerContinue() {
     if (answer.continue) {
       displayManagerOptions();
     } else {
-      console.log("\nTHANK YOU, GOODBYE!")
+      console.log("\n-- THANK YOU, GOODBYE! --");
     }
   });
 }
