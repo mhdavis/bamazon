@@ -56,8 +56,8 @@ function viewProducts() {
 
     let table = new Table({
       chars: tableChars,
-      head: ["ID", "Product", "Department", "Price", "Stock"],
-      colWidths: [5, 20, 20, 15 ,10]
+      head: ["ID", "Product", "Department", "Price", "Stock", "Product Sales"],
+      colWidths: [5, 20, 20, 15 ,10, 25]
     });
 
     for (let i=0; i < res.length; i++) {
@@ -66,7 +66,8 @@ function viewProducts() {
         res[i].product_name,
         res[i].department_name,
         "$" + res[i].price.toFixed(2),
-        res[i].stock_quantity
+        res[i].stock_quantity,
+        res[i].product_sales
        ]);
     }
     console.log(table.toString());
@@ -87,8 +88,8 @@ function viewLowInventory() {
 
     let table = new Table({
       chars: tableChars,
-      head: ["ID", "Product", "Department", "Price", "Stock"],
-      colWidths: [5, 20, 20, 15 ,10]
+      head: ["ID", "Product", "Department", "Price", "Stock", "Product Sales"],
+      colWidths: [5, 20, 20, 15 ,10, 25]
     });
 
     for (let i=0; i < res.length; i++) {

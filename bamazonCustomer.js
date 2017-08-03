@@ -29,7 +29,7 @@ function commenceShop() {
     let table = new Table({
       chars: tableChars,
       head: ["ID", "Product", "Department", "Price", "Stock", "Product Sales"],
-      colWidths: [5, 20, 20, 15 ,10, 20]
+      colWidths: [5, 20, 20, 15 ,10, 25]
     });
 
     for (let i=0; i < res.length; i++) {
@@ -38,7 +38,7 @@ function commenceShop() {
         res[i].product_name,
         res[i].department_name,
         "$" + res[i].price.toFixed(2),
-        res[i].stock_quantity
+        res[i].stock_quantity,
         res[i].product_sales
        ]);
     }
@@ -99,7 +99,7 @@ function removeFromStock(ans) {
 }
 
 function addToProductSales(ans, resp) {
-  let query = `UPDATE products set product_sales=product_sales+${parseFloat(resp.price) * parseFloat(ans.quantitySelected)} WHERE item_id=${parseInt(ans.idSelected)}`;
+  let query = `UPDATE products SET product_sales=product_sales+${parseFloat(resp.price) * parseFloat(ans.quantitySelected)} WHERE item_id=${parseInt(ans.idSelected)}`;
   connection.query(query, function (err) {
     if (err) throw err;
   });
