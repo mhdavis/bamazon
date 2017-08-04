@@ -78,27 +78,27 @@ function processOrder() {
         return false;
       }
     }
-  ]).then(function(answer) {
+  ]).then(function(answers) {
     connection.query("SELECT * FROM products", function(err, res) {
       if (err) throw err;
-      let parsedId = parseInt(answer.idSelected);
+      let parsedId = parseInt(answers.idSelected);
       let productId = parsedId - 1;
       if (res[productId]) {
         let storeStock = res[productId].stock_quantity;
-        let desiredAmount = answer.quantitySelected;
+        let desiredAmount = answers.quantitySelected;
 
         if (storeStock >= desiredAmount) {
-          customerTotal += parseFloat(res[productId].price) * parseFloat(answer.quantitySelected);
-          removeFromStock(answer);
-          addToProductSales(answer, res);
+          customerTotal += parseFloat(res[productId].price) * parseFloat(answers.quantitySelected);
+          removeFromStock(answers);
+          addToProductSales(answers, res[productId]);
           console.log("\nTotal Cost = $" + String(customerTotal.toFixed(2)) + "\n");
           continueShopping();
         } else {
-          console.log(`\nProduct ID ${answer.idSelected}: Insufficient Quantity!`);
+          console.log(`\nProduct ID ${answers.idSelected}: Insufficient Quantity!`);
           processOrder();
         }
       } else {
-        console.log(`\nSorry! No Product with ID: [ ${answer.idSelected} ] Found!`);
+        console.log(`\nSorry! No Product with ID: [ ${answers.idSelected} ] Found!`);
         processOrder();
       }
     });
@@ -121,7 +121,7 @@ function addToProductSales(ans, resp) {
   let query =
   `
   UPDATE products
-  SET product_sales=product_sales+${parseFloat(resp.price) * parseFloat(ans.quantitySelected)}
+  SET product_sales=product_sales+${parseFloat(resp.price)*parseFloat(ans.quantitySelected)}
   WHERE id=${parseInt(ans.idSelected)}
   `;
   connection.query(query, function (err) {
