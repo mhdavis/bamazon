@@ -29,7 +29,7 @@ function commenceShop() {
   WHERE products.department_id = departments.id
   GROUP BY products.id
   `;
-  connection.query("SELECT * FROM products", function(err, res) {
+  connection.query(fullTableQuery, function(err, res) {
     if (err) throw err;
 
     console.log(
@@ -42,7 +42,7 @@ function commenceShop() {
     let table = new Table({
       chars: tableChars,
       head: ["ID", "Product", "Department", "Price", "Stock", "Product Sales"],
-      colWidths: [5, 25, 20, 15 ,10, 25]
+      colWidths: [5, 30, 20, 15 ,10, 25]
     });
 
     for (let i=0; i < res.length; i++) {
