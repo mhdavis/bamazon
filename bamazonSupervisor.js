@@ -36,7 +36,10 @@ function displaySupervisorOptions() {
 }
 
 function viewProductSales() {
-  
+  connection.query(query2, function(err, res) {
+    if (err) throw err;
+    console.log(res);
+  });
 }
 
 function createDepartment() {

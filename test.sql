@@ -1,26 +1,12 @@
-DROP TABLE IF EXISTS departments;
+SELECT SUM(stock_quantity) FROM products WHERE department_name="Athletics";
 
-CREATE TABLE departments (
-  department_id INTEGER AUTO_INCREMENT,
-  department_name VARCHAR(30) NOT NULL,
-  over_head_costs INTEGER NOT NULL,
-  PRIMARY KEY (department_id)
-);
+SELECT SUM(product_sales) FROM products WHERE department_name="Athletics";
 
-INSERT INTO departments (department_name, over_head_costs)
-VALUES ("Athletics", 10000);
+/*Total sales across all departments and group by department name*/
+SELECT department_name, SUM(product_sales) FROM products GROUP BY department_name;
 
-INSERT INTO departments (department_name, over_head_costs)
-VALUES ("Cosmetics", 20000);
-
-INSERT INTO departments (department_name, over_head_costs)
-VALUES ("Outdoors", 30000);
-
-INSERT INTO departments (department_name, over_head_costs)
-VALUES ("Personal Care", 40000);
-
-INSERT INTO departments (department_name, over_head_costs)
-VALUES ("Kitchen", 50000);
-
-INSERT INTO departments (department_name, over_head_costs)
-VALUES ("Home Improvement", 60000);
+/*Joins with departments*/
+SELECT department_name, SUM(product_sales)
+FROM products
+GROUP BY department_name
+INNER JOIN departments ON departments.department_name = products.department_name;
