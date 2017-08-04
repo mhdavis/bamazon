@@ -36,9 +36,41 @@ function displaySupervisorOptions() {
 }
 
 function viewProductSales() {
-  connection.query(query2, function(err, res) {
+  let query =
+  `SELECT department_id,
+   department_name,
+   over_head_costs,
+   SUM(product_sales) AS department_sales,
+   SUM(product_sales) - departments.over_head_costs AS total_profit
+  FROM products
+  INNER JOIN departments ON departments.id = products.department_id
+  GROUP BY department_id`;
+  connection.query(query, function(err, res) {
     if (err) throw err;
-    console.log(res);
+    console.log(
+      "\n" +
+      "+---------------------+\n" +
+      "|   SUPERVISOR VIEW   |\n" +
+      "+---------------------+\n"
+    );
+
+    let table = new Table({
+      chars: tableChars,
+      head: ["ID", "Department", "Overhead Costs", "Department Sales", "Total Profit"],
+      colWidths: [5, 20, 20, 20, 20]
+    });
+
+    for (let i=0; i < res.length; i++) {
+      table.push([
+        res[i].department_id,
+        res[i].department_name,
+        res[i].over_head_costs,
+        res[i].department_sales,
+        res[i].total_profit
+       ]);
+    }
+    console.log(table.toString());
+
   });
 }
 

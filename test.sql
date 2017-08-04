@@ -6,7 +6,17 @@ SELECT SUM(product_sales) FROM products WHERE department_name="Athletics";
 SELECT department_name, SUM(product_sales) FROM products GROUP BY department_name;
 
 /*Joins with departments*/
-SELECT department_name, SUM(product_sales)
+SELECT department_name, SUM(product_sales) AS products_sold
 FROM products
-GROUP BY department_name
-INNER JOIN departments ON departments.department_name = products.department_name;
+INNER JOIN departments ON departments.id = products.department_id
+GROUP BY department_name;
+
+/*Query for Supervisor*/
+SELECT department_id,
+ department_name,
+ over_head_costs,
+ SUM(product_sales) AS department_sales,
+ SUM(product_sales) - departments.over_head_costs AS total_profit
+FROM products
+INNER JOIN departments ON departments.id = products.department_id
+GROUP BY department_id;
