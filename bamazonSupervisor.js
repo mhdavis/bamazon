@@ -70,7 +70,7 @@ function viewProductSales() {
       ]);
     }
     console.log(table.toString());
-
+    supervisorContinue();
   });
 }
 
@@ -94,8 +94,10 @@ function addNewDepartment() {
     }
   ]).then(function(answers) {
     let query =
-      `INSERT INTO departments (department_name, over_head_cost)
-    VALUES (${answers.departmentName}, ${parseInt(answers.overheadCost)})`;
+    `
+    INSERT INTO departments (department_name, over_head_cost)
+    VALUES (${answers.departmentName}, ${parseInt(answers.overheadCost)})
+    `;
     connection.query(query, function(err) {
       if (err) throw err;
 
@@ -116,5 +118,16 @@ function addNewDepartment() {
 }
 
 function supervisorContinue() {
-
+  inquirer.prompt([{
+    name: "continue",
+    type: "confirm",
+    message: "Return to Supervisor Options?",
+    default: true
+  }]).then(function(answer) {
+    if (answer.continue) {
+      displaySupervisorOptions();
+    } else {
+      console.log("\n-- THANK YOU, GOODBYE! --");
+    }
+  });
 }

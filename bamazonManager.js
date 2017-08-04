@@ -84,7 +84,6 @@ function viewProducts() {
        ]);
     }
     console.log(table.toString());
-
     managerContinue();
   });
 }
@@ -268,11 +267,17 @@ function addNewProduct() {
     let selectedDepartment = departmentsObjArr.find(function (obj) {
       return obj.department_name === answers.department;
     });
-    console.log(selectedDepartment);
-    let query = 'INSERT INTO products (name, department_id, price, stock_quantity, product_sales) ';
-    let values = `VALUES ("${answers.product}", ${selectedDepartment.department_id}, ${parseFloat(answers.price).toFixed(2)}, ${parseInt(answers.stock)}, 0)`;
-    let totalQuery = query + values;
-    connection.query(totalQuery, function (err) {
+    let query =
+    `
+    INSERT INTO products (name, department_id, price, stock_quantity, product_sales)
+    VALUES (
+      "${answers.product}",
+       ${selectedDepartment.department_id},
+       ${parseFloat(answers.price).toFixed(2)},
+       ${parseInt(answers.stock)},
+       0)
+    `;
+    connection.query(query, function (err) {
       if (err) throw err;
 
       inquirer.prompt([{
@@ -295,8 +300,8 @@ function addNewProduct() {
 
 function managerContinue() {
   inquirer.prompt([{
-    type: "confirm",
     name: "continue",
+    type: "confirm",
     message: "Return to Manager Options?",
     default: true
   }]).then(function(answer) {
