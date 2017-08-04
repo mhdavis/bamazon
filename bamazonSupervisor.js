@@ -37,7 +37,7 @@ function displaySupervisorOptions() {
 
 function viewProductSales() {
   let query =
-  `SELECT department_id,
+    `SELECT department_id,
    department_name,
    over_head_costs,
    SUM(product_sales) AS department_sales,
@@ -60,20 +60,61 @@ function viewProductSales() {
       colWidths: [5, 20, 20, 20, 20]
     });
 
-    for (let i=0; i < res.length; i++) {
+    for (let i = 0; i < res.length; i++) {
       table.push([
         res[i].department_id,
         res[i].department_name,
         res[i].over_head_costs,
         res[i].department_sales,
         res[i].total_profit
-       ]);
+      ]);
     }
     console.log(table.toString());
 
   });
 }
 
-function createDepartment() {
+function addNewDepartment() {
+  inquirer.prompt([{
+      name: "departmentName",
+      type: "input",
+      message: "Enter a new department name:"
+    },
+    {
+      name: "overheadCost",
+      type: "input",
+      message: "Enter overhead cost:",
+      validate: function(value) {
+        let flt = parseFloat(value);
+        if (typeof flt === 'number') {
+          return true;
+        }
+        return false;
+      }
+    }
+  ]).then(function(answers) {
+    let query =
+      `INSERT INTO departments (department_name, over_head_cost)
+    VALUES (${answers.departmentName}, ${parseInt(answers.overheadCost)})`;
+    connection.query(query, function(err) {
+      if (err) throw err;
+
+      inquirer.prompt([{
+        name: "continueAddingDepartments",
+        type: "confirm",
+        message: "Would you like to continue adding new departments?",
+      }]).then(function(answer) {
+        if (answer.continueAddingDepartments) {
+          addNewDepartment();
+        } else {
+          supervisorContinue();
+        }
+      });
+    });
+
+  });
+}
+
+function supervisorContinue() {
 
 }
