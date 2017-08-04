@@ -6,6 +6,7 @@ CREATE TABLE products (
   department_id INTEGER NOT NULL,
   price FLOAT(12, 2),
   stock_quantity INTEGER NOT NULL,
+  product_sales INTEGER NOT NULL,
   PRIMARY KEY(id)
 );
 
