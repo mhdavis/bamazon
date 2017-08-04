@@ -16,6 +16,19 @@ connection.connect(function(err) {
 });
 
 function commenceShop() {
+  let fullTableQuery =
+  `
+  SELECT
+  products.id,
+  products.name,
+  departments.department_name,
+  products.price,
+  products.stock_quantity,
+  products.product_sales
+  FROM products, departments
+  WHERE products.department_id = departments.id
+  GROUP BY products.id
+  `;
   connection.query("SELECT * FROM products", function(err, res) {
     if (err) throw err;
 
@@ -29,13 +42,13 @@ function commenceShop() {
     let table = new Table({
       chars: tableChars,
       head: ["ID", "Product", "Department", "Price", "Stock", "Product Sales"],
-      colWidths: [5, 20, 20, 15 ,10, 25]
+      colWidths: [5, 25, 20, 15 ,10, 25]
     });
 
     for (let i=0; i < res.length; i++) {
       table.push([
-        res[i].item_id,
-        res[i].product_name,
+        res[i].id,
+        res[i].name,
         res[i].department_name,
         "$" + res[i].price.toFixed(2),
         res[i].stock_quantity,
@@ -67,18 +80,19 @@ function processOrder() {
     }
   ]).then(function(answer) {
     connection.query("SELECT * FROM products", function(err, res) {
+      if (err) throw err;
       let parsedId = parseInt(answer.idSelected);
-      let idIndex = parsedId - 1;
-      if (res[idIndex]) {
-        let storeStock = res[idIndex].stock_quantity;
+      let productId = parsedId - 1;
+      if (res[productId]) {
+        let storeStock = res[productId].stock_quantity;
         let desiredAmount = answer.quantitySelected;
 
         if (storeStock >= desiredAmount) {
-          customerTotal += parseFloat(res[idIndex].price) * parseFloat(answer.quantitySelected);
+          customerTotal += parseFloat(res[productId].price) * parseFloat(answer.quantitySelected);
           removeFromStock(answer);
           addToProductSales(answer, res);
           console.log("\nTotal Cost = $" + String(customerTotal.toFixed(2)) + "\n");
-          continueOrStop();
+          continueShopping();
         } else {
           console.log(`\nProduct ID ${answer.idSelected}: Insufficient Quantity!`);
           processOrder();
@@ -92,20 +106,30 @@ function processOrder() {
 }
 
 function removeFromStock(ans) {
-  let query = `UPDATE products SET stock_quantity=stock_quantity-${parseInt(ans.quantitySelected)} WHERE item_id=${parseInt(ans.idSelected)}`;
+  let query =
+  `
+  UPDATE products
+  SET stock_quantity=stock_quantity-${parseInt(ans.quantitySelected)}
+  WHERE id=${parseInt(ans.idSelected)}
+  `;
   connection.query(query, function(err) {
     if (err) throw err;
   });
 }
 
 function addToProductSales(ans, resp) {
-  let query = `UPDATE products SET product_sales=product_sales+${parseFloat(resp.price) * parseFloat(ans.quantitySelected)} WHERE item_id=${parseInt(ans.idSelected)}`;
+  let query =
+  `
+  UPDATE products
+  SET product_sales=product_sales+${parseFloat(resp.price) * parseFloat(ans.quantitySelected)}
+  WHERE id=${parseInt(ans.idSelected)}
+  `;
   connection.query(query, function (err) {
     if (err) throw err;
   });
 }
 
-function continueOrStop() {
+function continueShopping() {
   inquirer.prompt([{
     name: "continue",
     type: "confirm",
