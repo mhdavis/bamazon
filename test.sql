@@ -20,3 +20,15 @@ SELECT department_id,
 FROM products
 INNER JOIN departments ON departments.id = products.department_id
 GROUP BY department_id;
+
+/*Query for products display*/
+SELECT
+products.id,
+products.name,
+departments.name,
+products.price,
+products.stock_quantity,
+product.sales
+FROM products, departments
+INNER JOIN departments ON departments.id = products.department_id
+GROUP BY products.id;

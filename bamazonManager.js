@@ -44,7 +44,20 @@ function displayManagerOptions() {
 }
 
 function viewProducts() {
-  connection.query("SELECT * FROM products", function(err, res) {
+  let fullTableQuery =
+  `
+  SELECT
+  products.id,
+  products.name,
+  departments.department_name,
+  products.price,
+  products.stock_quantity,
+  products.product_sales
+  FROM products, departments
+  WHERE products.department_id = departments.id
+  GROUP BY products.id
+  `;
+  connection.query(fullTableQuery, function(err, res) {
     if (err) throw err;
 
     console.log(
@@ -57,13 +70,13 @@ function viewProducts() {
     let table = new Table({
       chars: tableChars,
       head: ["ID", "Product", "Department", "Price", "Stock", "Product Sales"],
-      colWidths: [5, 20, 20, 15 ,10, 25]
+      colWidths: [5, 25, 20, 15 ,10, 25]
     });
 
     for (let i=0; i < res.length; i++) {
       table.push([
-        res[i].item_id,
-        res[i].product_name,
+        res[i].id,
+        res[i].name,
         res[i].department_name,
         "$" + res[i].price.toFixed(2),
         res[i].stock_quantity,
@@ -77,7 +90,21 @@ function viewProducts() {
 }
 
 function viewLowInventory() {
-  connection.query("SELECT * FROM products WHERE stock_quantity < 5", function(err, res) {
+  let lowInventoryQuery =
+  `
+  SELECT
+  products.id,
+  products.name,
+  departments.department_name,
+  products.price,
+  products.stock_quantity,
+  products.product_sales
+  FROM products, departments
+  WHERE products.department_id = departments.id
+  AND products.stock_quantity < 5
+  GROUP BY products.id
+  `;
+  connection.query(lowInventoryQuery, function(err, res) {
     if (err) throw err;
     console.log(
       "\n" +
@@ -89,16 +116,17 @@ function viewLowInventory() {
     let table = new Table({
       chars: tableChars,
       head: ["ID", "Product", "Department", "Price", "Stock", "Product Sales"],
-      colWidths: [5, 20, 20, 15 ,10, 25]
+      colWidths: [5, 25, 20, 15 ,10, 25]
     });
 
     for (let i=0; i < res.length; i++) {
       table.push([
-        res[i].item_id,
-        res[i].product_name,
+        res[i].id,
+        res[i].name,
         res[i].department_name,
         "$" + res[i].price.toFixed(2),
-        res[i].stock_quantity
+        res[i].stock_quantity,
+        res[i].product_sales
        ]);
     }
     console.log(table.toString());
@@ -108,7 +136,17 @@ function viewLowInventory() {
 }
 
 function addInventory() {
-  connection.query("SELECT * FROM products", function(err, res) {
+  let addInventoryQuery =
+  `
+  SELECT
+  products.id,
+  products.name,
+  products.price,
+  products.stock_quantity
+  FROM products
+  GROUP BY products.id
+  `;
+  connection.query(addInventoryQuery, function(err, res) {
     if (err) throw err;
     console.log(
       "\n" +
@@ -120,13 +158,13 @@ function addInventory() {
     let table = new Table({
       chars: tableChars,
       head: ["ID", "Product", "Stock"],
-      colWidths: [5, 20, 10]
+      colWidths: [5, 25, 10]
     });
 
     for (let i=0; i < res.length; i++) {
       table.push([
-        res[i].item_id,
-        res[i].product_name,
+        res[i].id,
+        res[i].name,
         res[i].stock_quantity
        ]);
     }
@@ -145,7 +183,7 @@ function addInventory() {
         message: "Enter quantity to add:"
       }
     ]).then(function(answer) {
-      let query = `UPDATE products SET stock_quantity=stock_quantity+${parseInt(answer.quantity)} WHERE item_id=${parseInt(answer.id)}`;
+      let query = `UPDATE products SET stock_quantity=stock_quantity+${parseInt(answer.quantity)} WHERE id=${parseInt(answer.id)}`;
       connection.query(query, function(error, res) {
         if (error) throw error;
         if (res.changedRows > 0) {
@@ -167,6 +205,28 @@ function addNewProduct() {
     "|     ADD NEW PRODUCT    |\n" +
     "+------------------------+\n"
   );
+  let departmentsQuery =
+  `
+  SELECT
+  departments.id,
+  departments.department_name
+  FROM departments
+  GROUP BY departments.id
+  `;
+
+  let departmentsArr = [];
+  let departmentsObjArr =[];
+
+  connection.query(departmentsQuery, function (err, res) {
+      for (let i=0; i < res.length; i++) {
+        let departmentObj = {
+          department_id: res[i].id,
+          department_name: res[i].department_name
+        }
+        departmentsObjArr.push(departmentObj);
+        departmentsArr.push(res[i].department_name);
+      }
+  });
 
   inquirer.prompt([
     {
@@ -176,7 +236,8 @@ function addNewProduct() {
     },
     {
       name: "department",
-      type: "input",
+      type: "list",
+      choices: departmentsArr,
       message: "DEPART.:"
     },
     {
@@ -204,8 +265,12 @@ function addNewProduct() {
       }
     }
   ]).then(function (answers) {
-    let query = 'INSERT INTO products (product_name, department_name, price, stock_quantity) ';
-    let values = `VALUES ("${answers.product}", "${answers.department}", ${parseFloat(answers.price).toFixed(2)}, ${parseInt(answers.stock)})`;
+    let selectedDepartment = departmentsObjArr.find(function (obj) {
+      return obj.department_name === answers.department;
+    });
+    console.log(selectedDepartment);
+    let query = 'INSERT INTO products (name, department_id, price, stock_quantity, product_sales) ';
+    let values = `VALUES ("${answers.product}", ${selectedDepartment.department_id}, ${parseFloat(answers.price).toFixed(2)}, ${parseInt(answers.stock)}, 0)`;
     let totalQuery = query + values;
     connection.query(totalQuery, function (err) {
       if (err) throw err;
