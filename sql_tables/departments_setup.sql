@@ -1,9 +1,9 @@
 DROP TABLE IF EXISTS departments;
 
 CREATE TABLE departments (
-  id INTEGER AUTO_INCREMENT;
-  department_name VARCHAR(30) NOT NULL;
-  over_head_costs INTEGER NOT NULL;
+  id INTEGER AUTO_INCREMENT,
+  department_name VARCHAR(30) NOT NULL,
+  over_head_costs INTEGER NOT NULL
 );
 
 INSERT INTO departments (department_name, over_head_costs)
