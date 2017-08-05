@@ -100,7 +100,7 @@ function viewLowInventory() {
   products.product_sales
   FROM products, departments
   WHERE products.department_id = departments.id
-  AND products.stock_quantity < 5
+  AND products.stock_quantity <= 5
   GROUP BY products.id
   `;
   connection.query(lowInventoryQuery, function(err, res) {

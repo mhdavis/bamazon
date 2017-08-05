@@ -29,7 +29,7 @@ function displaySupervisorOptions() {
         viewProductSales();
         break;
       case "Create New Department":
-        createDepartment();
+        createNewDepartment();
         break;
     }
   });
@@ -37,14 +37,16 @@ function displaySupervisorOptions() {
 
 function viewProductSales() {
   let query =
-    `SELECT department_id,
-   department_name,
-   over_head_costs,
-   SUM(product_sales) AS department_sales,
-   SUM(product_sales) - departments.over_head_costs AS total_profit
-  FROM products
-  INNER JOIN departments ON departments.id = products.department_id
-  GROUP BY department_id`;
+    `
+    SELECT departments.id,
+    department_name,
+    over_head_costs,
+    SUM(product_sales) AS department_sales,
+    SUM(product_sales) - departments.over_head_costs AS total_profit
+    FROM departments
+    LEFT JOIN products ON departments.id = products.department_id
+    GROUP BY departments.id;
+    `;
   connection.query(query, function(err, res) {
     if (err) throw err;
     console.log(
@@ -61,20 +63,30 @@ function viewProductSales() {
     });
 
     for (let i = 0; i < res.length; i++) {
-      table.push([
-        res[i].department_id,
-        res[i].department_name,
-        res[i].over_head_costs,
-        res[i].department_sales,
-        res[i].total_profit
-      ]);
+      if (res[i].total_profit === null && res[i].department_sales === null) {
+        table.push([
+          res[i].id,
+          res[i].department_name,
+          res[i].over_head_costs,
+          0,
+          0
+        ]);
+      } else {
+        table.push([
+          res[i].id,
+          res[i].department_name,
+          res[i].over_head_costs,
+          res[i].department_sales,
+          res[i].total_profit
+        ]);
+      }
     }
     console.log(table.toString());
     supervisorContinue();
   });
 }
 
-function addNewDepartment() {
+function createNewDepartment() {
   inquirer.prompt([{
       name: "departmentName",
       type: "input",
@@ -83,7 +95,7 @@ function addNewDepartment() {
     {
       name: "overheadCost",
       type: "input",
-      message: "Enter overhead cost:",
+      message: "Enter overhead cost ($):",
       validate: function(value) {
         let flt = parseFloat(value);
         if (typeof flt === 'number') {
@@ -95,11 +107,16 @@ function addNewDepartment() {
   ]).then(function(answers) {
     let query =
     `
-    INSERT INTO departments (department_name, over_head_cost)
-    VALUES (${answers.departmentName}, ${parseInt(answers.overheadCost)})
+    INSERT INTO departments (department_name, over_head_costs)
+    VALUES ("${answers.departmentName}", ${parseFloat(answers.overheadCost)})
     `;
-    connection.query(query, function(err) {
+    connection.query(query, function(err, res) {
       if (err) throw err;
+      if (res.affectedRows > 0) {
+        console.log(`\nSuccessfully added ${answers.departmentName} department!`);
+      } else {
+        console.log(`\nError: department creation unsuccessful`);
+      }
 
       inquirer.prompt([{
         name: "continueAddingDepartments",
@@ -107,7 +124,7 @@ function addNewDepartment() {
         message: "Would you like to continue adding new departments?",
       }]).then(function(answer) {
         if (answer.continueAddingDepartments) {
-          addNewDepartment();
+          createNewDepartment();
         } else {
           supervisorContinue();
         }
