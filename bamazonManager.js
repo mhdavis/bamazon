@@ -309,6 +309,7 @@ function managerContinue() {
       displayManagerOptions();
     } else {
       console.log("\n-- THANK YOU, GOODBYE! --");
+      connection.end();
     }
   });
 }

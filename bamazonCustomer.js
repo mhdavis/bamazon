@@ -141,6 +141,7 @@ function continueShopping() {
     } else {
       console.log("\nFinal Total Cost = $" + String(customerTotal.toFixed(2)) + "\n");
       console.log("--- THANK YOU FOR SHOPPING, HAVE A NICE DAY! ---")
+      connection.end();
     }
   });
 }

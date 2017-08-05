@@ -145,6 +145,7 @@ function supervisorContinue() {
       displaySupervisorOptions();
     } else {
       console.log("\n-- THANK YOU, GOODBYE! --");
+      connection.end();
     }
   });
 }
