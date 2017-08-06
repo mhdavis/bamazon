@@ -223,7 +223,9 @@ function addNewProduct() {
           department_name: res[i].department_name
         }
         departmentsObjArr.push(departmentObj);
-        departmentsArr.push(res[i].department_name);
+        if (departmentsArr.indexOf(res[i].department_name !== -1)) {
+          departmentsArr.push(res[i].department_name);
+        }
       }
   });
 
@@ -277,8 +279,12 @@ function addNewProduct() {
        ${parseInt(answers.stock)},
        0)
     `;
-    connection.query(query, function (err) {
+    connection.query(query, function (err, res) {
       if (err) throw err;
+
+      if (res.changedRows > 0) {
+        console.log(`\nSuccessfully Added ${answers.product} to Products!\n`);
+      }
 
       inquirer.prompt([{
         name: "continueAddingProducts",
